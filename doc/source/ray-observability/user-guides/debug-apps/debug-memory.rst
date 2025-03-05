@@ -6,37 +6,34 @@ Debugging Memory Issues
 
 .. _troubleshooting-out-of-memory:
 
-Debugging Out of Memory
------------------------
+Before you begin, review the Ray :ref:`Memory Management <memory>` documentation.
 
-Before reading this section, familiarize yourself with the Ray :ref:`Memory Management <memory>` model.
+- If your cluster experiences out-of-memory issues, see :ref:`How to Detect Out-of-Memory Errors <troubleshooting-out-of-memory-how-to-detect>`.
+- To identify the source of a memory leak, see :ref:`Find per Task and Actor Memory Usage <troubleshooting-out-of-memory-task-actor-mem-usage>`.
+- If the head node shows high memory usage, see :ref:`Head Node Out-of-Memory Error <troubleshooting-out-of-memory-head>`.
+- If high parallelism drives up memory usage, see :ref:`Reduce Parallelism <troubleshooting-out-of-memory-reduce-parallelism>`.
+- To profile memory usage of tasks and actors, see :ref:`Profile Task and Actor Memory Usage <troubleshooting-out-of-memory-profile>`.
 
-- If your cluster has out-of-memory problems, view :ref:`How to Detect Out-of-Memory Errors <troubleshooting-out-of-memory-how-to-detect>`.
-- To locate the source of the memory leak, view :ref:`Find per Task and Actor Memory Usage <troubleshooting-out-of-memory-task-actor-mem-usage>`.
-- If your head node has high memory usage, view :ref:`Head Node Out-of-Memory Error <troubleshooting-out-of-memory-head>`.
-- If your memory usage is high due to high parallelism, view :ref:`Reduce Parallelism <troubleshooting-out-of-memory-reduce-parallelism>`.
-- If you want to profile per Task and Actor memory usage, view :ref:`Profile Task and Actor Memory Usage <troubleshooting-out-of-memory-profile>`.
+Identifying Out-of-Memory Errors
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-What's the Out-of-Memory Error?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Memory is a limited resource. When a process requests memory and the OS fails to allocate it, the OS frees up memory
+by killing a process with high usage (using SIGKILL) to maintain stability. This routine is known as the `Linux Out-of-Memory (OOM) killer <https://www.kernel.org/doc/gorman/html/understand/understand016.html>`_.
 
-Memory is a limited resource. When a process requests memory and the OS fails to allocate it, the OS executes a routine to free up memory
-by killing a process that has high memory usage (via SIGKILL) to avoid the OS becoming unstable. This routine is called the `Linux Out of Memory killer <https://www.kernel.org/doc/gorman/html/understand/understand016.html>`_.
+Ray cannot catch SIGKILL, thus it has limited ability to show a detailed error message or trigger fault tolerance actions.
+To address this, Ray introduced an application-level :ref:`memory monitor <ray-oom-monitor>` in Ray 2.2. 
+This monitor continuously checks host memory usage and proactively kills Ray workers before the Linux OOM killer does.
 
-One of the common problems of the Linux out-of-memory killer is that SIGKILL kills processes without Ray noticing it. 
-Since SIGKILL cannot be handled by processes, Ray has difficulty raising a proper error message
-and taking proper actions for fault tolerance.
-To solve this problem, Ray has (from Ray 2.2) an application-level :ref:`memory monitor <ray-oom-monitor>`,
-which continually monitors the memory usage of the host and kills the Ray Workers before the Linux out-of-memory killer executes. 
 
 .. _troubleshooting-out-of-memory-how-to-detect:
 
-Detecting Out-of-Memory errors
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Detecting Out-of-Memory Errors
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If the Linux out-of-memory killer terminates Tasks or Actors, Ray Worker processes are unable to catch and display an exact root cause
-because SIGKILL cannot be handled by processes. If you call ``ray.get`` into the Tasks and Actors that were executed from the dead worker,
-it raises an exception with one of the following error messages (which indicates the worker is killed unexpectedly).
+
+If the Linux OOM killer terminates tasks or actors, Ray worker processes cannot catch and display the exact root cause
+because SIGKILL cannot be handled by processes. When you call ``ray.get`` on a task or actor from a killed worker,
+Ray raises an exception with one of the following messages:
 
 .. code-block:: bash
 
@@ -46,14 +43,13 @@ it raises an exception with one of the following error messages (which indicates
 
   Worker exit type: SYSTEM_ERROR Worker exit detail: The leased worker has unrecoverable failure. Worker is requested to be destroyed when it is returned.
 
-You can also use the `dmesg <https://phoenixnap.com/kb/dmesg-linux#:~:text=The%20dmesg%20command%20is%20a,take%20place%20during%20system%20startup.>`_ CLI command to verify the processes are killed by the Linux out-of-memory killer.
-
+You can also run the CLI command `dmesg <https://phoenixnap.com/kb/dmesg-linux#:~:text=The%20dmesg%20command%20is%20a,take%20place%20during%20system%20startup.>`_ to verify that the Linux OOM killer terminated the processes.
 .. image:: ../../images/dmsg.png
     :align: center
 
-If Ray's memory monitor kills the worker, it is automatically retried (see the :ref:`link <ray-oom-retry-policy>` for details).
-If Tasks or Actors cannot be retried, they raise an exception with 
-a much cleaner error message when you call ``ray.get`` to it.
+
+If Ray's memory monitor kills a worker, Ray retries it automatically (see the :ref:`link <ray-oom-retry-policy>` for details).
+When tasks or actors cannot be retried, they raise the following exception when you call ``ray.get``:
 
 .. code-block:: bash
 
@@ -72,7 +68,7 @@ a much cleaner error message when you call ``ray.get`` to it.
 
   Refer to the documentation on how to address the out of memory issue: https://docs.ray.io/en/latest/ray-core/scheduling/ray-oom-prevention.html.
 
-Ray memory monitor also periodically prints the aggregated out-of-memory killer summary to Ray drivers.
+Ray's memory monitor periodically prints an aggregated summary of OOM events to Ray drivers:
 
 .. code-block:: bash
 
