@@ -7,7 +7,7 @@ import oci.config
 import oci
 import ray
 import copy
-import utils
+import ray.autoscaler._private.oci.utils
 from ray.autoscaler.node_provider import NodeProvider
 
 
