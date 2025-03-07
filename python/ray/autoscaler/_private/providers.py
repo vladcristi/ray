@@ -198,7 +198,7 @@ def _load_azure_defaults_config():
 def _load_oci_defaults_config():
     import ray.autoscaler.oci as ray_oci
 
-    return os.path.join(os.path.dirname(ray_oci.__file__), "default.yaml")
+    return os.path.join(os.path.dirname(ray_oci.__file__), "defaults.yaml")
 
 
 def _load_aliyun_defaults_config():
