@@ -116,6 +116,11 @@ def test_multi_provider_instance_type():
         azure_config.get_provider_instance_type("ray.head.default") == "Standard_D2s_v3"
     )
 
+    oci_config = load_config("oci/defaults.yaml")
+    assert (
+        oci_config.get_provider_instance_type("ray.head.default") == "VM.Standard3.Flex"
+    )
+    
     # TODO(rickyx):
     # We don't have kuberay and local config yet.
 
