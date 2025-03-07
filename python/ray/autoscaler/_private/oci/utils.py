@@ -57,7 +57,7 @@ def get_image(compute, compartment_id, shape):
         compute.list_images,
         compartment_id,
         operating_system=OPERATING_SYSTEM,
-        shape=shape.shape
+        shape=shape
     )
     images = list_images_response.data
     if len(images) == 0:
@@ -358,7 +358,7 @@ def get_launch_instance_details(compartment_id, availability_domain, shape, imag
         display_name=instance_name,
         compartment_id=compartment_id,
         availability_domain=availability_domain.name,
-        shape=shape.shape,
+        shape=shape,
         #metadata=instance_metadata,
         #extended_metadata=instance_extended_metadata,
         source_details=instance_source_via_image_details,
