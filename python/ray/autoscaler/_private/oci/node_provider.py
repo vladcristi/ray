@@ -81,7 +81,8 @@ class OCINodeProvider(NodeProvider):
             instance = create_instance_with_network(
                 instance_type=node_config["InstanceType"],
                 compartment_id=node_config["CompartmentId"],
-                cidr_block=node_config["CidrBlock"]
+                cidr_block=node_config["CidrBlock"],
+                public_key_path=node_config["PublicKeyPath"]
                 # tags=filter_tags,
             )
             created_nodes_dict.append(instance)

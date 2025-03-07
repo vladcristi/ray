@@ -57,6 +57,8 @@ available_node_types:
             InstanceType: VM.Standard.B1.1
             CompartmentId: ocid1.compartment.oc1..aaaaaaaa3l2tyis5kuaheidnqmr34vff6odi7co5pzfv2c5sifabbiegnb5q
             CidrBlock: 10.0.0.0/16
+            PublicKeyPath: ~/.ssh/id_rsa.pub
+
     ray.worker.default:
         # The minimum number of worker nodes of this type to launch.
         # This number should be >= 0.
