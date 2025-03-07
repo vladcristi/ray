@@ -191,6 +191,7 @@ ray_files += [
     "ray/autoscaler/gcp/defaults.yaml",
     "ray/autoscaler/local/defaults.yaml",
     "ray/autoscaler/vsphere/defaults.yaml",
+     "ray/autoscaler/oci/defaults.yaml",
     "ray/autoscaler/ray-schema.json",
 ]
 
