@@ -7,7 +7,8 @@ import oci.config
 import oci
 import ray
 import copy
-import ray.autoscaler._private.oci.utils
+from ray.autoscaler._private.oci.utils import create_instance_with_network
+from ray.autoscaler._private.oci.config import boostrap_oci
 from ray.autoscaler.node_provider import NodeProvider
 
 
@@ -49,6 +50,16 @@ class OCINodeProvider(NodeProvider):
             "region": provider_config["oci_region"]
         }
 
+    def non_terminated_nodes(self, tag_filters):
+        non_terminated_instances = []
+        return non_terminated_instances
+
+    def is_running(self, node_id: str) -> bool:
+        return False
+
+    def is_terminated(self, node_id: str) -> bool:
+        return False
+
     def create_node(self, node_config, tags, count):
         filter_tags = [
             {
@@ -67,7 +78,7 @@ class OCINodeProvider(NodeProvider):
             {"Key": TAG_RAY_NODE_STATUS, "Value": tags[TAG_RAY_NODE_STATUS]}
         )
         while count > 0:
-            instance = utils.create_instance_with_network(
+            instance = create_instance_with_network(
                 instance_type=node_config["InstanceType"],
                 compartment_id=node_config["CompartmentId"],
                 cidr_block=node_config["CidrBlock"]
@@ -76,3 +87,11 @@ class OCINodeProvider(NodeProvider):
             created_nodes_dict.append(instance)
 
         return created_nodes_dict
+    
+    def terminate_nodes(self, node_ids: List[str]) -> None:
+        if not node_ids:
+            return
+        
+    @staticmethod
+    def bootstrap_config(cluster_config):
+        return boostrap_oci(cluster_config)

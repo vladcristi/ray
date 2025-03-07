@@ -1,13 +1,13 @@
 import logging
 import os
 import stat
+import copy
 
-from ray.autoscaler._private_oci.utils import OCIClient
 
 
 def boostrap_oci(config):
-    
-    # create vpc
-    _get_or_create_vpc(config)
+    # create a copy of the input config to modify
+    config = copy.deepcopy(config)
+    config["head_node"] = {}
 
-    # create 
+    return config
