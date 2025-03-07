@@ -23,11 +23,11 @@ idle_timeout_minutes: 5
 # Cloud-provider specific configuration.
 provider:
     type: oci
-    region: eu-frankfurt-1
+    oci_region: eu-frankfurt-1
     fingerprint: 8e:48:b6:40:12:c8:e6:0d:75:1b:b7:43:26:d3:47:6f
-    tenancy: ocid1.tenancy.oc1..aaaaaaaaz3zvzfb4afndqhyljo75yoat5azx6yw5hppwxqv3felvg3flex4q
-    user: ocid1.user.oc1..aaaaaaaap6rcfzzw5zawfxnuozmspwtr4sh6xu47cb774rrabqd52nb6btdq
-    key_file_path: ~/.oci/oracleidentitycloudservice_cristian.vlad-09-01-08-30.pem
+    tenancy_ocid: ocid1.tenancy.oc1..aaaaaaaaz3zvzfb4afndqhyljo75yoat5azx6yw5hppwxqv3felvg3flex4q
+    user_ocid: ocid1.user.oc1..aaaaaaaap6rcfzzw5zawfxnuozmspwtr4sh6xu47cb774rrabqd52nb6btdq
+    full_path_to_private_key: ~/.oci/oracleidentitycloudservice_cristian.vlad-09-01-08-30.pem
 
 # How Ray will authenticate with newly launched nodes.
 auth:

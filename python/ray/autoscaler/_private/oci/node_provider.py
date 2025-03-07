@@ -45,7 +45,7 @@ class OCINodeProvider(NodeProvider):
             "user": provider_config["user_ocid"],
             "key_file": provider_config["full_path_to_private_key"],
             "fingerprint": provider_config["fingerprint"],
-            "tenancy": provider_config["tenancy_oci"],
+            "tenancy": provider_config["tenancy_ocid"],
             "region": provider_config["oci_region"]
         }
 
