@@ -86,6 +86,7 @@ class OCINodeProvider(NodeProvider):
                 # tags=filter_tags,
             )
             created_nodes_dict.append(instance)
+            count=-1
 
         return created_nodes_dict
     
